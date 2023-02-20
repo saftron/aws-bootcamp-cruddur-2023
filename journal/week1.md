@@ -7,3 +7,8 @@
 - Run continer using set env vars & unset env vars using -e docker command, stop container using Docker extension
 - Ran docker build for frontend, initiated with docker-compose.yml file & set env vars , then docker build, launched Druddur app frontend in PORT=3000
 - changed backend file of one of command and verified at frontend
+
+## Chirag's video implementation -
+	- Gitpod free usage, pricing & billing options
+	- Githiub codespaces - free usage hours, create codespaces for 2 core  
+  - AWSCloud9  - free tier of t2.micro, create environment, CloudTrail 
