@@ -1,6 +1,6 @@
 # Week 1 — App Containerization
 
-### Attended Week1 - Docker container session and parallel executed Docker image creation, build & compose
+### Attended Week1 - Docker container session and parallelly executed Docker image creation, build & compose
 - Initalize backend flask using Dockerfile
 - setup env variables
 - Build container & run container in 4597 port & able to view JSON using /api/activity/home
