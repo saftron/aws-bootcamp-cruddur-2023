@@ -12,3 +12,11 @@
 	- Gitpod free usage, pricing & billing options
 	- Githiub codespaces - free usage hours, create codespaces for 2 core  
   - AWSCloud9  - free tier of t2.micro, create environment, CloudTrail 
+## Ashish's Docker container security Best Practices
+Learned overview about below topics
+ - Security Best Practices
+ - AWS Secrets Manager
+ - HashiCorp Vault
+ - AWS Clair
+ - AWS Inspector
+ - Snyk Container Security
