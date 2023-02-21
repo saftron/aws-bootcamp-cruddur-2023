@@ -20,3 +20,10 @@ Learned overview about below topics
  - AWS Clair
  - AWS Inspector
  - Snyk Container Security
+
+## Andrewa new NOTIFICATION page creation
+### Updated openAPI changes for notification page implementation
+	- Created new notifications api in the backend & verified endpoint URL
+	- Along with frontend page created under app.js, notifications pages & css
+	- Validated changes at UI
+
