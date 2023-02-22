@@ -30,7 +30,8 @@ Learned overview about below topics
 ## DynamoDb & Postgres implementation to project
 ### Created DynamoDB & Postgres into gitpod.yml & docker-compose files 
  - Successfully made Postgres config & connection
- - Ran Postgres commands and success login
+ - Ran Postgres commands and success login <br>
+ 
 **Challenges**
 - Made wrong connection of database instead 5432 , made it to 3450
 
