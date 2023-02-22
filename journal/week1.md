@@ -21,9 +21,16 @@ Learned overview about below topics
  - AWS Inspector
  - Snyk Container Security
 
-## Andrewa new NOTIFICATION page creation
+## Andrew new NOTIFICATION page creation
 ### Updated openAPI changes for notification page implementation
 	- Created new notifications api in the backend & verified endpoint URL
 	- Along with frontend page created under app.js, notifications pages & css
 	- Validated changes at UI
+	
+## DynamoDb & Postgres implementation to project
+### Created DynamoDB & Postgres into gitpod.yml & docker-compose files 
+ - Successfully made Postgres config & connection
+ - Ran Postgres commands and success login
+**Challenges**
+- Made wrong connection of database instead 5432 , made it to 3450
 
