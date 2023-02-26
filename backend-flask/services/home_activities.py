@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-
+tracer = trace.get_tracer("home.activities")
 
 class HomeActivities:
     def run():
