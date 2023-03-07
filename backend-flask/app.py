@@ -2,6 +2,7 @@ from flask import Flask
 from flask import request
 from flask_cors import CORS, cross_origin
 import os
+import sys
 
 from services.home_activities import *
 from services.user_activities import *
@@ -12,6 +13,8 @@ from services.message_groups import *
 from services.messages import *
 from services.create_message import *
 from services.show_activity import *
+
+from lib.cognito_jwt_token import CognitoJwtToken, extract_access_token, TokenVerifyError
 
 # HoneyComb ---------
 from opentelemetry import trace
@@ -37,9 +40,6 @@ import rollbar
 import rollbar.contrib.flask
 from flask import got_request_exception
 
-# AWS-Amplify
-import { Amplify } from 'aws-amplify'
-
 # Configuring Logger to Use CloudWatch
 # LOGGER = logging.getLogger(__name__)
 # LOGGER.setLevel(logging.DEBUG)
@@ -56,9 +56,10 @@ processor = BatchSpanProcessor(OTLPSpanExporter())
 provider.add_span_processor(processor)
 
 # X-RAY ----------
-#xray_url = os.getenv("AWS_XRAY_URL")
-#xray_recorder.configure(service='backend-flask', dynamic_naming=xray_url)
+xray_url = os.getenv("AWS_XRAY_URL")
+xray_recorder.configure(service='backend-flask', dynamic_naming=xray_url)
 
+# OTEL ----------
 # Show this in the logs within the backend-flask app (STDOUT)
 #simple_processor = SimpleSpanProcessor(ConsoleSpanExporter())
 #provider.add_span_processor(simple_processor)
@@ -68,8 +69,14 @@ tracer = trace.get_tracer(__name__)
 
 app = Flask(__name__)
 
+cognito_jwt_token = CognitoJwtToken(
+  user_pool_id=os.getenv("AWS_COGNITO_USER_POOL_ID"), 
+  user_pool_client_id=os.getenv("AWS_COGNITO_USER_POOL_CLIENT_ID"),
+  region=os.getenv("AWS_DEFAULT_REGION")
+)
+
 # X-RAY ----------
-#XRayMiddleware(app, xray_recorder)
+XRayMiddleware(app, xray_recorder)
 
 # HoneyComb ---------
 # Initialize automatic instrumentation with Flask
@@ -83,29 +90,12 @@ origins = [frontend, backend]
 cors = CORS(
   app, 
   resources={r"/api/*": {"origins": origins}},
-  expose_headers="location,link",
-  allow_headers="content-type,if-modified-since",
+  headers=['Content-Type', 'Authorization'], 
+  expose_headers='Authorization',
   methods="OPTIONS,GET,HEAD,POST"
 )
 
-
-# AWS-Amplify
-Amplify.configure({
-  "AWS_PROJECT_REGION": process.env.REACT_AWS_PROJECT_REGION,
-  "aws_cognito_identity_pool_id": process.env.REACT_APP_AWS_COGNITO_IDENTITY_POOL_ID,
-  "aws_cognito_region": process.env.REACT_APP_AWS_COGNITO_REGION,
-  "aws_user_pools_id": process.env.REACT_APP_AWS_USER_POOLS_ID,
-  "aws_user_pools_web_client_id": process.env.REACT_APP_CLIENT_ID,
-  "oauth": {},
-  Auth: {
-    // We are not using an Identity Pool
-    // identityPoolId: process.env.REACT_APP_IDENTITY_POOL_ID, // REQUIRED - Amazon Cognito Identity Pool ID
-    region: process.env.REACT_AWS_PROJECT_REGION,           // REQUIRED - Amazon Cognito Region
-    userPoolId: process.env.REACT_APP_AWS_USER_POOLS_ID,         // OPTIONAL - Amazon Cognito User Pool ID
-    userPoolWebClientId: process.env.REACT_APP_AWS_USER_POOLS_WEB_CLIENT_ID,   // OPTIONAL - Amazon Cognito Web Client ID (26-char alphanumeric string)
-  }
-});
-
+# CloudWatch Logs -----
 #@app.after_request
 #def after_request(response):
 #    timestamp = strftime('[%Y-%b-%d %H:%M]')
@@ -171,11 +161,25 @@ def data_create_message():
   return
 
 @app.route("/api/activities/home", methods=['GET'])
+@xray_recorder.capture('activities_home')
 def data_home():
-  data = HomeActivities.run()
+  access_token = extract_access_token(request.headers)
+  try:
+    claims = cognito_jwt_token.verify(access_token)
+    # authenicatied request
+    app.logger.debug("authenicated")
+    app.logger.debug(claims)
+    app.logger.debug(claims['username'])
+    data = HomeActivities.run(cognito_user_id=claims['username'])
+  except TokenVerifyError as e:
+    # unauthenicatied request
+    app.logger.debug(e)
+    app.logger.debug("unauthenicated")
+    data = HomeActivities.run()
   return data, 200
 
 @app.route("/api/activities/@<string:handle>", methods=['GET'])
+@xray_recorder.capture('activities_users')
 def data_handle(handle):
   model = UserActivities.run(handle)
   if model['errors'] is not None:
@@ -207,6 +211,7 @@ def data_activities():
   return
 
 @app.route("/api/activities/<string:activity_uuid>", methods=['GET'])
+@xray_recorder.capture('activities_show')
 def data_show_activity(activity_uuid):
   data = ShowActivity.run(activity_uuid=activity_uuid)
   return data, 200
