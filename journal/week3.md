@@ -12,5 +12,5 @@
 ### Then updated at docker-compose. Then successfully signedup & validated with verification code reached on my email.
 ### Raised issues and suggestions followed from Discord group
 ### Tried Forgot password, recovery code being received with three emails.
-R### eset with new passoword, It worked.
+### Reset with new passoword, It worked.
 ### Exploring JWT
