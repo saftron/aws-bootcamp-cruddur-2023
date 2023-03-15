@@ -61,8 +61,8 @@ class HomeActivities:
           cur.execute(sql)
           # this will return a tuple
           # the first field being the data
-          json = cur.fetchall()
-      print("--------------")
-      print(json)
+          rows = cur.fetchall()
+          for row in rows;
+            print(row)
       return json[0]
       return results
