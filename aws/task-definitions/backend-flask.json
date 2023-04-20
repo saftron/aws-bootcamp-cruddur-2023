@@ -57,8 +57,8 @@
           {"name": "OTEL_EXPORTER_OTLP_ENDPOINT", "value": "https://api.honeycomb.io"},
           {"name": "AWS_COGNITO_USER_POOL_ID", "value": "${AWS_COGNITO_USER_POOL_ID}"},
           {"name": "AWS_COGNITO_USER_POOL_CLIENT_ID", "value": "2p0hc01u1bdd4e2729jde49ed7"},
-          {"name": "FRONTEND_URL", "value": "*"},
-          {"name": "BACKEND_URL", "value": "*"},
+          {"name": "FRONTEND_URL", "value": "theawsbootcamp.com"},
+          {"name": "BACKEND_URL", "value": "api.theawsbootcamp.com"},
           {"name": "AWS_DEFAULT_REGION", "value": "us-east-1"}
         ],
         "secrets": [
